@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Socra — Suraj</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #F8F8F5;
+      --surface: #EFEFEA;
+      --ink: #141414;
+      --mid: #6B6B65;
+      --accent: #2D6A6A;
+      --accent-light: #E4EEEE;
+      --rule: #D8D8D2;
+      --code-bg: #EEEEE9;
+    }
+
+    html { font-size: 16px; scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: 'Inter', sans-serif;
+      font-weight: 400;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .wrap {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 0 32px;
+    }
+
+    /* ── Nav ── */
+    nav {
+      padding: 28px 0 24px;
+      border-bottom: 1px solid var(--rule);
+    }
+    nav .wrap {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+    }
+    .nav-name {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.05rem;
+      letter-spacing: -0.01em;
+      color: var(--ink);
+      text-decoration: none;
+    }
+    .nav-back {
+      font-size: 0.85rem;
+      color: var(--mid);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+    .nav-back:hover { color: var(--ink); }
+
+    /* ── Status ── */
+    .status-bar {
+      padding: 12px 0;
+      border-bottom: 1px solid var(--rule);
+      background: var(--surface);
+    }
+    .status-bar .wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--mid);
+      flex-shrink: 0;
+    }
+    .status-bar p {
+      font-size: 0.8rem;
+      color: var(--mid);
+    }
+    .status-bar a {
+      color: var(--ink);
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+
+    /* ── Header ── */
+    .page-header {
+      padding: 64px 0 56px;
+      border-bottom: 1px solid var(--rule);
+    }
+    .product-eyebrow {
+      font-size: 0.78rem;
+      font-weight: 500;
+      color: var(--mid);
+      margin-bottom: 16px;
+      letter-spacing: 0.02em;
+    }
+    .page-header h1 {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(2.2rem, 5vw, 3.2rem);
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      color: var(--ink);
+      margin-bottom: 20px;
+    }
+    .page-header .lede {
+      font-size: 1.05rem;
+      color: var(--mid);
+      line-height: 1.75;
+      max-width: 580px;
+    }
+    .repo-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 28px;
+      font-size: 0.85rem;
+      color: var(--mid);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+    .repo-link:hover { color: var(--ink); }
+    .repo-link svg {
+      width: 18px;
+      height: 18px;
+      fill: currentColor;
+      flex-shrink: 0;
+    }
+
+    /* ── Prose ── */
+    .prose-section {
+      padding: 56px 0;
+      border-bottom: 1px solid var(--rule);
+    }
+    .prose-section:last-of-type { border-bottom: none; }
+
+    .section-label {
+      font-size: 0.78rem;
+      font-weight: 500;
+      color: var(--mid);
+      margin-bottom: 32px;
+      letter-spacing: 0.04em;
+    }
+
+    .prose-section h2 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.6rem;
+      letter-spacing: -0.015em;
+      line-height: 1.2;
+      color: var(--ink);
+      margin-bottom: 16px;
+    }
+
+    .prose-section p {
+      font-size: 0.95rem;
+      color: var(--mid);
+      line-height: 1.8;
+      max-width: 640px;
+      margin-bottom: 16px;
+    }
+    .prose-section p:last-child { margin-bottom: 0; }
+    .prose-section p strong {
+      color: var(--ink);
+      font-weight: 500;
+    }
+
+    /* ── Memory items ── */
+    .memory-items {
+      display: flex;
+      flex-direction: column;
+      margin: 32px 0;
+      gap: 0;
+    }
+    .memory-item {
+      display: grid;
+      grid-template-columns: 200px 1fr;
+      gap: 24px;
+      padding: 24px 0;
+      border-top: 1px solid var(--rule);
+      align-items: start;
+    }
+    .memory-item:first-child { border-top: none; padding-top: 0; }
+    .memory-item-label {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--ink);
+      padding-top: 2px;
+    }
+    .memory-item-desc {
+      font-size: 0.875rem;
+      color: var(--mid);
+      line-height: 1.7;
+    }
+
+    /* ── Pivot block ── */
+    .pivot-block {
+      margin-top: 32px;
+      padding: 28px 32px;
+      background: var(--surface);
+      border-left: 2px solid var(--accent);
+      border-radius: 0 4px 4px 0;
+    }
+    .pivot-block p {
+      font-size: 0.9rem;
+      color: var(--ink);
+      line-height: 1.75;
+      margin-bottom: 0;
+      max-width: none;
+    }
+    .pivot-block .pivot-label {
+      font-size: 0.72rem;
+      font-weight: 500;
+      color: var(--accent);
+      letter-spacing: 0.04em;
+      margin-bottom: 10px;
+      display: block;
+    }
+
+    /* ── Footer ── */
+    footer {
+      padding: 32px 0 40px;
+      border-top: 1px solid var(--rule);
+    }
+    footer .wrap {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    footer p { font-size: 0.8rem; color: var(--mid); }
+    .footer-links { display: flex; gap: 20px; list-style: none; }
+    .footer-links a {
+      font-size: 0.8rem;
+      color: var(--mid);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+    .footer-links a:hover { color: var(--ink); }
+
+    /* ── Responsive ── */
+    @media (max-width: 580px) {
+      .wrap { padding: 0 20px; }
+      .memory-item { grid-template-columns: 1fr; gap: 6px; }
+      .pivot-block { padding: 20px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * { transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Nav -->
+  <nav>
+    <div class="wrap">
+      <a href="index.html" class="nav-name">Suraj</a>
+      <a href="index.html" class="nav-back">All products</a>
+    </div>
+  </nav>
+
+  <!-- Header -->
+  <div class="page-header">
+    <div class="wrap">
+      <p class="product-eyebrow">Product — EdTech / AI</p>
+      <h1>Socra</h1>
+      <p class="lede">
+        A Socratic tutor for GP students that refuses to give answers. You paste a question, it walks you through building the argument yourself — one question at a time. The essay is the vehicle. The thinking is the point.
+      </p>
+      <a href="https://github.com/surajpaprapilly/socra" class="repo-link" target="_blank" rel="noopener" aria-label="View Socra on GitHub">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+        View source
+      </a>
+    </div>
+  </div>
+
+  <!-- What it's for -->
+  <section class="prose-section">
+    <div class="wrap">
+      <p class="section-label">The problem</p>
+      <h2>GP rewards a skill most students have never been taught</h2>
+      <p>
+        Singapore A-Level General Paper is challenging. It tests whether you can take a contestable question, interrogate its terms, hold two sides at once, and build a reasoned, qualified position. Students like myself, from the science stream have spent years being rewarded for correct answers. There is no “correct answer” in GP, rather it is about how you argue your point while maintaining balance, nuance etc.
+      </p>
+      <p>
+        The typical response to struggling is to get more content, more model essays, more examples. The most common study technique for GP that has been there since I studied GP 7 years back was to memorise a bunch of examples. None of that addresses the actual gap. The gap is the reasoning. How to autopsy a question, how to qualify a thesis, how to evaluate rather than just describe. These aren't things you can read your way into. They have to be practised. Regular chatGPT and Claude will bias to giving you the answer, this follows a structure to get you to think.
+      </p>
+      <p>
+        Socra's bet was that a Socratic dialogue, where the tool asks rather than tells, could build those moves through repeated practice. A student pastes a GP question and gets walked through a structured session: autopsy the question, lock a thesis, build an argument skeleton, deepen paragraphs. An essay blueprint assembles in the background as a side effect of the thinking.
+      </p>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="wrap">
+      <p>Suraj, Singapore — 2026</p>
+      <ul class="footer-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="mailto:suraj@example.com">Email</a></li>
+        <li><a href="https://github.com/surajpaprapilly/socra" target="_blank" rel="noopener">GitHub</a></li>
+      </ul>
+    </div>
+  </footer>
+
+</body>
+</html>

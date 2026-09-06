@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>How do the LLMs understand what I am saying? — Suraj</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #F8F8F5;
+      --surface: #EFEFEA;
+      --ink: #141414;
+      --mid: #6B6B65;
+      --accent: #2D6A6A;
+      --accent-light: #E4EEEE;
+      --rule: #D8D8D2;
+      --code-bg: #EEEEE9;
+      --yellow: #F4EBAC;
+    }
+
+    html { font-size: 16px; scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: 'Inter', sans-serif;
+      font-weight: 400;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .wrap {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 0 32px;
+    }
+
+    /* ── Nav ── */
+    nav {
+      padding: 28px 0 24px;
+      border-bottom: 1px solid var(--rule);
+    }
+    nav .wrap {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+    }
+    .nav-name {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.05rem;
+      letter-spacing: -0.01em;
+      color: var(--ink);
+      text-decoration: none;
+    }
+    .nav-back {
+      font-size: 0.85rem;
+      color: var(--mid);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+    .nav-back:hover { color: var(--ink); }
+
+    /* ── Post header ── */
+    .post-header {
+      padding: 64px 0 48px;
+      border-bottom: 1px solid var(--rule);
+    }
+    .post-eyebrow {
+      font-size: 0.78rem;
+      font-weight: 500;
+      color: var(--mid);
+      margin-bottom: 16px;
+      letter-spacing: 0.02em;
+    }
+    .post-header h1 {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(1.9rem, 4.5vw, 2.8rem);
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      color: var(--ink);
+      margin-bottom: 24px;
+      max-width: 600px;
+    }
+    .post-meta {
+      font-size: 0.82rem;
+      color: var(--mid);
+    }
+
+    /* ── Post body ── */
+    .post-body {
+      padding: 56px 0;
+      max-width: 640px;
+    }
+
+    .post-body p {
+      font-size: 0.975rem;
+      color: var(--mid);
+      line-height: 1.85;
+      margin-bottom: 24px;
+    }
+
+    .post-body p strong {
+      color: var(--ink);
+      font-weight: 500;
+    }
+
+    .post-body h2 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.5rem;
+      letter-spacing: -0.015em;
+      line-height: 1.2;
+      color: var(--ink);
+      margin-top: 52px;
+      margin-bottom: 16px;
+    }
+
+    /* ── Recurring example sentence ── */
+    .sentence {
+      display: block;
+      font-family: 'DM Serif Display', serif;
+      font-style: italic;
+      font-size: 1.15rem;
+      color: var(--ink);
+      border-left: 2px solid var(--accent);
+      padding: 12px 20px;
+      margin: 32px 0;
+      line-height: 1.5;
+    }
+
+    /* ── Short emphatic lines / the model "speaking" ── */
+    .q {
+      display: block;
+      margin: 24px 0;
+      padding: 10px 18px;
+      border-left: 2px solid var(--rule);
+      color: var(--ink);
+      font-weight: 500;
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+
+    /* ── Code / formula blocks ── */
+    .formula {
+      display: block;
+      background: var(--code-bg);
+      border-radius: 4px;
+      padding: 20px 24px;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 0.85rem;
+      line-height: 1.8;
+      color: var(--ink);
+      margin: 24px 0;
+      overflow-x: auto;
+      white-space: pre-wrap;
+    }
+
+    /* ── Token example ── */
+    .token-chain {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin: 24px 0;
+      font-size: 0.85rem;
+    }
+    .token {
+      background: var(--surface);
+      border: 1px solid var(--rule);
+      border-radius: 3px;
+      padding: 4px 10px;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      color: var(--ink);
+    }
+    .token-arrow {
+      color: var(--mid);
+      font-size: 0.8rem;
+    }
+
+    /* ── Attention tables ── */
+    .table-wrap {
+      margin: 32px 0;
+      overflow-x: auto;
+      border: 1px solid var(--rule);
+      border-radius: 4px;
+    }
+
+    table {
+      border-collapse: collapse;
+      font-size: 0.72rem;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      width: 100%;
+    }
+    thead th {
+      background: var(--surface);
+      color: var(--mid);
+      font-weight: 500;
+      padding: 8px 10px;
+      text-align: center;
+      border-bottom: 1px solid var(--rule);
+      white-space: nowrap;
+    }
+    thead th:first-child {
+      text-align: left;
+    }
+    tbody tr:nth-child(even) td {
+      background: #F3F3EF;
+    }
+    tbody td {
+      padding: 7px 10px;
+      text-align: center;
+      color: var(--mid);
+      border-bottom: 1px solid var(--rule);
+      white-space: nowrap;
+    }
+    tbody td:first-child {
+      text-align: left;
+      font-weight: 500;
+      color: var(--ink);
+      background: var(--surface);
+      border-right: 1px solid var(--rule);
+    }
+    tbody tr:last-child td { border-bottom: none; }
+
+    td.masked { color: var(--rule); }
+    td.highlight {
+      color: var(--accent);
+      font-weight: 600;
+    }
+    td.self {
+      color: var(--ink);
+      font-weight: 500;
+    }
+    td.yellow {
+      background: var(--yellow) !important;
+      color: var(--ink);
+    }
+    td.mark {
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    /* ── QKV diagram ── */
+    .qkv {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin: 28px 0;
+    }
+    .qkv-card {
+      background: var(--surface);
+      border-radius: 4px;
+      padding: 16px 18px;
+    }
+    .qkv-card .qkv-letter {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.4rem;
+      color: var(--accent);
+      margin-bottom: 6px;
+    }
+    .qkv-card .qkv-name {
+      font-size: 0.78rem;
+      font-weight: 500;
+      color: var(--ink);
+      margin-bottom: 4px;
+    }
+    .qkv-card p {
+      font-size: 0.78rem;
+      color: var(--mid);
+      line-height: 1.55;
+      margin-bottom: 0;
+    }
+
+    /* ── Summary chain ── */
+    .summary-chain {
+      margin: 36px 0;
+      padding: 24px 28px;
+      background: var(--code-bg);
+      border-radius: 4px;
+      font-size: 0.85rem;
+      line-height: 2.2;
+      color: var(--mid);
+    }
+    .summary-chain .step {
+      color: var(--ink);
+      font-weight: 500;
+    }
+
+    /* ── Footnote ── */
+    .footnote {
+      margin-top: 48px;
+      padding-top: 24px;
+      border-top: 1px solid var(--rule);
+    }
+    .footnote p {
+      font-size: 0.82rem;
+      color: var(--mid);
+      line-height: 1.7;
+      margin-bottom: 0;
+    }
+    .fnref {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    /* ── Footer ── */
+    footer {
+      padding: 32px 0 40px;
+      border-top: 1px solid var(--rule);
+    }
+    footer .wrap {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    footer p { font-size: 0.8rem; color: var(--mid); }
+    .footer-links { display: flex; gap: 20px; list-style: none; }
+    .footer-links a {
+      font-size: 0.8rem;
+      color: var(--mid);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+    .footer-links a:hover { color: var(--ink); }
+
+    /* ── Responsive ── */
+    @media (max-width: 580px) {
+      .wrap { padding: 0 20px; }
+      .qkv { grid-template-columns: 1fr; }
+      table { font-size: 0.65rem; }
+      thead th, tbody td { padding: 6px 7px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * { transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Nav -->
+  <nav>
+    <div class="wrap">
+      <a href="index.html" class="nav-name">Suraj</a>
+      <a href="index.html" class="nav-back">All writing</a>
+    </div>
+  </nav>
+
+  <!-- Header -->
+  <div class="post-header">
+    <div class="wrap">
+      <p class="post-eyebrow">Writing</p>
+      <h1>How do the LLMs understand what I am saying?</h1>
+      <p class="post-meta">Suraj &nbsp;·&nbsp; September 2026</p>
+    </div>
+  </div>
+
+  <!-- Body -->
+  <div class="wrap">
+    <div class="post-body">
+
+      <p>I've been trying to understand what is actually happening inside a GPT. I want to try my best to build this intuition from first principles. Really try to understand how it is able to understand the words that we type in, the words it consumes and so on.</p>
+
+      <p>The sentence I'll use throughout is:</p>
+
+      <span class="sentence">"The cat is on the mat and it seems very hungry."</span>
+
+      <h2>How do we get the text to something machines understand?</h2>
+
+      <p>We have all heard that computers don't see words, they see numbers. That is true for language models as well.</p>
+
+      <p>So the first problem is simple:</p>
+
+      <span class="q">How do we turn text into numbers?</span>
+
+      <p>One way would be to give every character in our corpus a unique number. For example, we could say:</p>
+
+<div class="formula">a → 0
+b → 1
+c → 2
+and so on.</div>
+
+      <p>So our sentence here:</p>
+
+      <span class="sentence">"The cat is on the mat and it seems very hungry."</span>
+
+      <p>can be represented as a sequence of numbers.</p>
+
+      <p>In production GPTs, this process is called tokenization. Instead of necessarily treating every character as a token, the tokenizer breaks text into pieces called tokens. A token might be a whole word, part of a word, punctuation, or other common sequence of characters.</p>
+
+      <p>For example, "problematic" might be split into something like:</p>
+
+<div class="formula">problem + atic</div>
+
+      <p>There are reasons for why a word is split as such, which I will not get to in this piece. For the purposes of building a foundational understanding, let's simplify things and assume that every word is a token. This means every word gets an ID. Just like how we give each student in a class an ID, we are doing the same thing for our text.</p>
+
+      <p>The important thing to understand is that the ID itself doesn't carry meaning.</p>
+
+      <p>If cat is 0 and is is 1, there is nothing inherently meaningful about the numbers 0 and 1. They are simply labels that allow us to identify the tokens.</p>
+
+      <p>So we have solved our first problem.</p>
+
+      <span class="q">Text → Token IDs. Computers now can read these words as numbers</span>
+
+      <p>But these IDs are not yet particularly useful to “understand” all of the internet or any of the internet for that matter.</p>
+
+      <h2>How do we encode the meaning?</h2>
+
+      <p>Let's say we have the following token IDs:</p>
+
+<div class="formula">[18, 47, 56, 57, 58, 1, 15, 47, 58, ...]</div>
+
+      <p>These numbers tell us which tokens we are looking at, but we need to represent these tokens in a way so that we can capture the “meaning” of it. This is where embeddings come in.</p>
+
+      <p>We can think of the embedding as giving the model a multidimensional space in which it can learn different ways to represent the token. Imagine you have a student in your class and to truly understand him, there are many dimensions of him that you may need to know. His english scores, math scores, how he is in class, how he is around others, family history, etc etc. The same way we use these embeddings to learn “representations” of the token. We should be careful about saying that each individual dimension represents a specific feature. The meaning is encoded in the combination of dimensions rather than one dimension corresponding neatly to one human-interpretable feature.</p>
+
+      <p>So, Instead of representing every token with a single integer, we map every token ID to a vector of numbers.</p>
+
+      <p>For our GPT, let's say the embedding dimension is 512.</p>
+
+      <p>So instead of just:</p>
+
+      <div class="token-chain">
+        <span class="token">cat</span>
+        <span class="token-arrow">→</span>
+        <span class="token">42</span>
+      </div>
+
+      <p>we might have:</p>
+
+<div class="formula">Token → Token ID → Embedding
+cat → 42 → [0.12, -0.37, 0.81, ..., 0.04]</div>
+
+      <p>with 512 numbers in total.</p>
+
+      <p>A very natural question I had was where did the numbers for the embedding even come from?</p>
+
+      <p>These embeddings start out randomly and instead are learnt through training. So what that means is, the “embeddings” which for a basic understanding that encode the meaning of the word in the sequence starts out randomly. So although this infrastructure is set up, the meanings of these words are all random and then we learn the meanings</p>
+
+      <p>So now our sentence:</p>
+
+      <span class="sentence">"The cat is on the mat and it seems very hungry."</span>
+
+      <p>is no longer a sequence of arbitrary token IDs. It is a sequence of 512-dimensional vectors.</p>
+
+      <p>But we have another problem.</p>
+
+      <h2>Where is the position?</h2>
+
+      <p>Consider these two sentences:</p>
+
+      <span class="sentence">"The man bit a dog."<br>and<br>"The dog bit a man."</span>
+
+      <p>They contain the same tokens. The difference is their order.</p>
+
+      <p>If we simply looked at the token embeddings, "man" would have the same embedding in both sentences and "dog" would have the same embedding in both sentences. Both sentences would have the same set of embeddings although their meanings are different. So position also plays a key role in understanding meaning. But their positions are different, and that position matters. So the model needs some way of knowing not just what a token is, but where it occurs in the sequence. We can do this by adding a position embedding. There is an embedding vector for each position in the sequence. So for the first token, we have its token embedding and its position embedding and for the second token, we have its token embedding and its position embedding and so on.</p>
+
+      <p>These are added together. So the representation entering the next part of the model contains information about both the token and its position.</p>
+
+      <p>For our sentence:</p>
+
+      <span class="sentence">"The cat is on the mat and it seems very hungry."</span>
+
+      <p>the token "it" is not just represented as "it." It is represented as "it" occurring at a particular position in this particular sequence. At this point, we have something much more useful, every token has a 512-dimensional representation that contains information about the token and its position. But there is still a fundamental problem.</p>
+
+      <h2>How does one token know anything about the other tokens around it?</h2>
+
+      <p>Consider our sentence again:</p>
+
+      <span class="sentence">"The cat is on the mat and it seems very hungry."</span>
+
+      <p>When we get to the word "it", how do we know what "it" refers to? If we looked at the word "it" in isolation, we wouldn't know. The information we need is elsewhere in the sentence. As humans, we naturally look at the surrounding words and determine which ones are relevant. We know this because we have seen so many sentences, heard them and understood the relationships between words in a sentence to be able to infer its meaning.</p>
+
+      <p>A GPT also needs a mechanism for doing something similar. We need a way for the representation of one token to gather information from other tokens.</p>
+
+      <p>So the question is:</p>
+
+      <span class="q">How do we let tokens influence the meaning of the tokens around it?</span>
+
+      <p>Let's imagine every token is a student in a classroom.</p>
+
+      <p>Each student has information about themselves, but they are also allowed to look around the room and decide who might have useful information for them.</p>
+
+      <p>To do this, we give each student three different representations:</p>
+
+      <div class="qkv">
+        <div class="qkv-card">
+          <div class="qkv-letter">Q</div>
+          <div class="qkv-name">Query</div>
+          <p>What information am I looking for?</p>
+        </div>
+        <div class="qkv-card">
+          <div class="qkv-letter">K</div>
+          <div class="qkv-name">Key</div>
+          <p>What kind of information do I have?</p>
+        </div>
+        <div class="qkv-card">
+          <div class="qkv-letter">V</div>
+          <div class="qkv-name">Value</div>
+          <p>What information do I actually provide?</p>
+        </div>
+      </div>
+
+      <p>These are called Query, Key and Value, or Q, K and V.</p>
+
+      <p>But where do they come from? We take the token embedding we already have and multiply them by three different weight matrices. Once again, a natural question is where do these Weight matrices come from. Just like embeddings, random at first and learnt through training.</p>
+
+      <p>Let's say X is a matrix of all the embeddings of a sentence. W_Q, W_K, W_V are weight matrices for Query, Key and Value.</p>
+
+      <p>What is the significance of these weight matrices?</p>
+
+      <p>They are how we project the embedding - which is the meaning of the word into the 3 representations, Query, Key and Value we mentioned previously.</p>
+
+      <p>One for Query:</p>
+<div class="formula">Q = X*W_Q</div>
+
+      <p>One for Key:</p>
+<div class="formula">K = X*W_K</div>
+
+      <p>And one for Value:</p>
+<div class="formula">V = X*W_V</div>
+
+      <p>So our sentence:</p>
+
+      <span class="sentence">"The cat is on the mat and it seems very hungry."</span>
+
+      <p>now produces three matrices. One containing the Queries, one containing the Key and one containing the Values. Every token now has its own Query, Key and Value representation.</p>
+
+      <p>Now that we have Query, Key, Value set up, the next question is:</p>
+
+      <span class="q">How do we inform each token of the others in the sequence?</span>
+
+      <p>This is where we compare Queries and Keys. We take the Query matrix and multiply it by the transpose of the Key matrix:</p>
+
+<div class="formula">Q*Kᵀ</div>
+
+      <p>This gives us a matrix of attention scores. Essentially what that means is, every row in the matrix represents a token asking:</p>
+
+      <span class="q">"How relevant is every other token to me?"</span>
+
+      <p>And every column represents a token's Key being evaluated by the Queries of the other tokens.</p>
+
+      <p>For example, when we look at the row corresponding to "it", we can see how strongly the Query for "it" matches the Key of every other token.</p>
+
+      <p>A high score means:</p>
+
+      <span class="q">"The information represented by this token's Key looks relevant to what I am looking for."</span>
+
+      <p>A low score means:</p>
+
+      <span class="q">"This token probably isn't very relevant to me."</span>
+
+      <p>The model has now created a map of relationships between tokens.</p>
+
+      <p>But there is an important problem. <strong>The model cannot see the future</strong></p>
+
+      <p>Remember what a GPT is fundamentally trying to do. It is trying to predict the next token.</p>
+
+      <p>If the model is trying to predict what comes after: <em>"The cat is on the mat and"</em> it cannot be allowed to look ahead and see: <em>"it seems very hungry."</em></p>
+
+      <p>That would give the model the answer before it has predicted it. So we apply what is called a causal mask. The mask prevents every token from attending to tokens that come after it.</p>
+
+      <p>Conceptually, our attention matrix looks something like this:</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th></th>
+              <th>The</th><th>cat</th><th>is</th><th>on</th><th>the</th><th>mat</th><th>and</th><th>it</th><th>seems</th><th>very</th><th>hungry</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>The</td><td class="self">1.20</td><td class="masked">−∞</td><td class="masked">−∞</td><td class="masked">−∞</td><td class="masked">−∞</td><td class="masked">−∞</td><td class="masked">−∞</td><td class="masked">−∞</td><td class="masked">−∞</td><td class="masked">−∞</td><td class="masked">−∞</td></tr>
+            <tr><td>cat</td><td>0.35</td><td class="self">1.50</td><td class="masked">−∞</td><td class="masked">−∞</td><td class="masked">−∞</td><td class="masked">−∞</td><td class="masked">−∞</td><td class="masked">−∞</td><td class="masked">−∞</td><td class="masked">−∞</td><td class="masked">−∞</td></tr>
+            <tr><td>is</td><td>0.20</td><td>0.65</td><td class="self">1.10</td><td class="masked">−∞</td><td class="masked">−∞</td><td class="masked">−∞</td><td class="masked">−∞</td><td class="masked">−∞</td><td class="masked">−∞</td><td class="masked">−∞</td><td class="masked">−∞</td></tr>
+            <tr><td>on</td><td>0.15</td><td>0.40</td><td>0.55</td><td class="self">1.30</td><td class="masked">−∞</td><td class="masked">−∞</td><td class="masked">−∞</td><td class="masked">−∞</td><td class="masked">−∞</td><td class="masked">−∞</td><td class="masked">−∞</td></tr>
+            <tr><td>the</td><td>0.10</td><td>0.30</td><td>0.25</td><td>0.45</td><td class="self">1.15</td><td class="masked">−∞</td><td class="masked">−∞</td><td class="masked">−∞</td><td class="masked">−∞</td><td class="masked">−∞</td><td class="masked">−∞</td></tr>
+            <tr><td>mat</td><td>0.25</td><td>0.50</td><td>0.35</td><td>0.70</td><td>0.80</td><td class="self">1.40</td><td class="masked">−∞</td><td class="masked">−∞</td><td class="masked">−∞</td><td class="masked">−∞</td><td class="masked">−∞</td></tr>
+            <tr><td>and</td><td>0.10</td><td>0.20</td><td>0.30</td><td>0.25</td><td>0.35</td><td>0.45</td><td class="self">1.05</td><td class="masked">−∞</td><td class="masked">−∞</td><td class="masked">−∞</td><td class="masked">−∞</td></tr>
+            <tr><td>it</td><td>0.15</td><td class="highlight">1.80</td><td>0.20</td><td>0.10</td><td>0.15</td><td class="highlight">1.25</td><td>0.35</td><td class="self">1.10</td><td class="masked">−∞</td><td class="masked">−∞</td><td class="masked">−∞</td></tr>
+            <tr><td>seems</td><td>0.10</td><td>0.35</td><td>0.20</td><td>0.15</td><td>0.20</td><td>0.30</td><td>0.40</td><td>1.35</td><td class="self">1.20</td><td class="masked">−∞</td><td class="masked">−∞</td></tr>
+            <tr><td>very</td><td>0.05</td><td>0.20</td><td>0.15</td><td>0.10</td><td>0.15</td><td>0.25</td><td>0.20</td><td>0.60</td><td>1.30</td><td class="self">1.10</td><td class="masked">−∞</td></tr>
+            <tr><td>hungry</td><td>0.10</td><td>0.30</td><td>0.15</td><td>0.10</td><td>0.20</td><td>0.35</td><td>0.25</td><td>1.15</td><td>1.40</td><td>1.25</td><td class="self">1.30</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>Everything above the diagonal is blocked.</p>
+
+      <p>This means "it" can look at "cat", but "cat" cannot look at "it".</p>
+
+      <p>The model is therefore forced to reason using only the information that would actually have been available at that point in the sequence.</p>
+
+      <p>Moreover, look at the row for “it”. The model compares the Query of “it” against the Keys of all the tokens that came before it. In this example, the score between “it” and “cat” is 1.80, while the score between “it” and “mat” is 1.25. This means that, at this point, the model considers “cat” more relevant to “it” than “mat”.</p>
+
+      <p>We want to turn them into weights that tell us how much information to take from each token. First, we scale the scores by the square root of the dimension of the attention head.<a href="#fn-dk" id="fnref-dk" class="fnref">*</a></p>
+
+      <span class="q">How do we know proportionally how much to apply these weights to each token’s embeddings?</span>
+
+      <p>We do that by applying softmax. For simplicity let’s assume this is a normalizer, it forces all the values to be between 0 and 1.</p>
+
+      <p>Softmax converts the scores into a probability-like distribution where the values in each row sum to 1.</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th></th>
+              <th>The</th><th>cat</th><th>is</th><th>on</th><th>the</th><th>mat</th><th>and</th><th>it</th><th>seems</th><th>very</th><th>hungry</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>The</td><td class="self">1.00</td><td>0.00</td><td>0.00</td><td>0.00</td><td>0.00</td><td>0.00</td><td>0.00</td><td>0.00</td><td>0.00</td><td>0.00</td><td>0.00</td></tr>
+            <tr><td>cat</td><td>0.46</td><td class="self">0.54</td><td>0.00</td><td>0.00</td><td>0.00</td><td>0.00</td><td>0.00</td><td>0.00</td><td>0.00</td><td>0.00</td><td>0.00</td></tr>
+            <tr><td>is</td><td>0.29</td><td>0.43</td><td class="self">0.28</td><td>0.00</td><td>0.00</td><td>0.00</td><td>0.00</td><td>0.00</td><td>0.00</td><td>0.00</td><td>0.00</td></tr>
+            <tr><td>on</td><td>0.22</td><td>0.28</td><td>0.32</td><td class="self">0.18</td><td>0.00</td><td>0.00</td><td>0.00</td><td>0.00</td><td>0.00</td><td>0.00</td><td>0.00</td></tr>
+            <tr><td>the</td><td>0.18</td><td>0.22</td><td>0.21</td><td>0.24</td><td class="self">0.15</td><td>0.00</td><td>0.00</td><td>0.00</td><td>0.00</td><td>0.00</td><td>0.00</td></tr>
+            <tr><td>mat</td><td>0.13</td><td>0.17</td><td>0.14</td><td>0.20</td><td>0.22</td><td class="self">0.14</td><td>0.00</td><td>0.00</td><td>0.00</td><td>0.00</td><td>0.00</td></tr>
+            <tr><td>and</td><td>0.13</td><td>0.15</td><td>0.16</td><td>0.15</td><td>0.17</td><td>0.18</td><td class="self">0.06</td><td>0.00</td><td>0.00</td><td>0.00</td><td>0.00</td></tr>
+            <tr><td>it</td><td class="yellow">0.07</td><td class="yellow mark">0.35</td><td class="yellow">0.07</td><td class="yellow">0.06</td><td class="yellow">0.07</td><td class="yellow">0.20</td><td class="yellow">0.08</td><td class="yellow self">0.10</td><td>0.00</td><td>0.00</td><td>0.00</td></tr>
+            <tr><td>seems</td><td>0.07</td><td>0.09</td><td>0.08</td><td>0.08</td><td>0.08</td><td>0.09</td><td>0.10</td><td>0.17</td><td class="self">0.14</td><td>0.00</td><td>0.00</td></tr>
+            <tr><td>very</td><td>0.08</td><td>0.09</td><td>0.09</td><td>0.08</td><td>0.09</td><td>0.10</td><td>0.09</td><td>0.13</td><td>0.13</td><td class="self">0.12</td><td>0.00</td></tr>
+            <tr><td>hungry</td><td>0.07</td><td>0.09</td><td>0.08</td><td>0.08</td><td>0.09</td><td>0.10</td><td>0.09</td><td>0.14</td><td>0.18</td><td>0.11</td><td class="self">0.06</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>For example, if the token "it" considers the previous tokens and produces scores that become the ones highlighted in yellow.</p>
+
+      <p>The model is effectively saying:</p>
+
+      <span class="q">"Of the information available to me, these are the relative amounts I want to take from each token."</span>
+
+      <p>And now we finally have something that deserves to be called attention.</p>
+
+      <p>The model has taken the question: <em>"What information is relevant to me?"</em> compared it against the Keys of the other tokens, applied the causal constraint, and converted the resulting scores into weights.</p>
+
+      <p>The final step is to use those weights to take a weighted sum of the Value vectors.</p>
+
+      <p>In other words:</p>
+
+<div class="formula">Attention weights × Values</div>
+
+      <p>This gives each token a new representation containing information gathered from the tokens it considered relevant.</p>
+
+      <p>So the representation of "it" can now contain information gathered from earlier tokens, including "cat". The token started with information about itself. Through attention, it can now incorporate information about the tokens around it.</p>
+
+      <p>And that is the fundamental idea.</p>
+
+      <p>We started with:</p>
+
+      <div class="summary-chain">
+        <span class="step">Text</span> —&gt; <span class="step">Token IDs</span> —&gt; <span class="step">Token embeddings</span> —&gt; <span class="step">Position embeddings</span> —&gt; <span class="step">Queries, Keys and Values</span> —&gt; <span class="step">Attention scores</span> —-&gt; <span class="step">Weighted information from other tokens</span>
+      </div>
+
+      <p>We started with a sentence that was just text:</p>
+
+      <span class="sentence">"The cat is on the mat and it seems very hungry."</span>
+
+      <p>And we have now reached the mechanism that allows one token to look at the tokens that came before it and determine which ones are relevant.</p>
+
+      <p>This is self-attention. One thing about this piece is that I have glossed over the part of “learned matrices”. Embeddings were random, Weight matrices were random and after all that they all somehow “Learn” give us the ability to understand different things. I would likely write the following piece to be able to give an intuitive understanding of what this “Learning” and “Learned matrices” are all about.</p>
+
+      <div class="footnote">
+        <p id="fn-dk">* The dot product is a sum across all the dimensions of the Query and Key vectors. As the dimensionality increases, these scores tend to become larger. Since we apply softmax immediately afterwards, very large scores can cause softmax to become extremely concentrated on one token. Dividing by √d_k keeps the scores at a more manageable scale and helps maintain useful gradients during training.</p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <div class="wrap">
+      <p>Suraj, Singapore — 2026</p>
+      <ul class="footer-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="mailto:suraj@example.com">Email</a></li>
+        <li><a href="https://github.com/" target="_blank" rel="noopener">GitHub</a></li>
+      </ul>
+    </div>
+  </footer>
+
+</body>
+</html>

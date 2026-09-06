@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Suraj</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #F8F8F5;
+      --surface: #EFEFEA;
+      --ink: #141414;
+      --mid: #6B6B65;
+      --accent: #2D6A6A;
+      --accent-light: #E4EEEE;
+      --rule: #D8D8D2;
+    }
+
+    html { font-size: 16px; scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: 'Inter', sans-serif;
+      font-weight: 400;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── Layout ── */
+    .wrap {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 0 32px;
+    }
+
+    /* ── Nav ── */
+    nav {
+      padding: 28px 0 24px;
+      border-bottom: 1px solid var(--rule);
+    }
+    nav .wrap {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+    }
+    .nav-name {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.05rem;
+      letter-spacing: -0.01em;
+      color: var(--ink);
+      text-decoration: none;
+    }
+    .nav-links {
+      display: flex;
+      gap: 28px;
+      list-style: none;
+    }
+    .nav-links a {
+      font-size: 0.85rem;
+      color: var(--mid);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+    .nav-links a:hover { color: var(--ink); }
+
+    /* ── First section spacing (no hero above it) ── */
+    section:first-of-type { padding-top: 72px; }
+
+    /* ── Section headers ── */
+    section { padding: 64px 0; border-bottom: 1px solid var(--rule); }
+    section:last-child { border-bottom: none; }
+
+    .section-label {
+      font-size: 0.78rem;
+      font-weight: 500;
+      color: var(--mid);
+      margin-bottom: 40px;
+      letter-spacing: 0.04em;
+    }
+
+    /* ── Projects ── */
+    .projects { display: flex; flex-direction: column; gap: 0; }
+
+    .project {
+      display: grid;
+      grid-template-columns: 180px 1fr;
+      gap: 24px;
+      padding: 28px 0;
+      border-top: 1px solid var(--rule);
+      align-items: start;
+      text-decoration: none;
+      color: inherit;
+      transition: opacity 0.15s;
+    }
+    .project:first-child { border-top: none; padding-top: 0; }
+    .project:hover { opacity: 0.75; }
+
+    .project-meta {
+      padding-top: 2px;
+    }
+    .project-name {
+      font-size: 0.92rem;
+      font-weight: 500;
+      color: var(--ink);
+      margin-bottom: 4px;
+    }
+    .project-status {
+      font-size: 0.75rem;
+      color: var(--accent);
+      font-weight: 500;
+    }
+    .project-status.wip { color: #8A6D2E; }
+
+    .project-body h3 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.25rem;
+      letter-spacing: -0.015em;
+      line-height: 1.25;
+      margin-bottom: 10px;
+      color: var(--ink);
+    }
+    .project-body p {
+      font-size: 0.9rem;
+      color: var(--mid);
+      line-height: 1.65;
+      max-width: 480px;
+    }
+    .project-body .project-more {
+      margin-top: 10px;
+      color: var(--accent);
+      font-weight: 500;
+    }
+    .project-body .tag-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 14px;
+      flex-wrap: wrap;
+    }
+    .tag {
+      font-size: 0.72rem;
+      font-weight: 500;
+      color: var(--mid);
+      background: var(--surface);
+      padding: 2px 8px;
+      border-radius: 2px;
+    }
+
+    /* ── Blog ── */
+    .blog-posts { display: flex; flex-direction: column; gap: 0; }
+
+    .post {
+      display: grid;
+      grid-template-columns: 180px 1fr;
+      gap: 24px;
+      padding: 28px 0;
+      border-top: 1px solid var(--rule);
+      text-decoration: none;
+      color: inherit;
+      align-items: start;
+      transition: opacity 0.15s;
+    }
+    .post:first-child { border-top: none; padding-top: 0; }
+    .post:hover { opacity: 0.75; }
+
+    .post-date {
+      font-size: 0.82rem;
+      color: var(--mid);
+      padding-top: 3px;
+      font-variant-numeric: tabular-nums;
+    }
+    .post-body h3 {
+      font-size: 1rem;
+      font-weight: 500;
+      color: var(--ink);
+      line-height: 1.4;
+      margin-bottom: 6px;
+    }
+    .post-body p {
+      font-size: 0.875rem;
+      color: var(--mid);
+      line-height: 1.6;
+      max-width: 480px;
+    }
+
+    /* ── About ── */
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+    }
+    .about-block h4 {
+      font-size: 0.82rem;
+      font-weight: 500;
+      color: var(--mid);
+      margin-bottom: 12px;
+    }
+    .about-block p, .about-block li {
+      font-size: 0.9rem;
+      color: var(--ink);
+      line-height: 1.7;
+    }
+    .about-block ul {
+      list-style: none;
+      padding: 0;
+    }
+    .about-block ul li::before {
+      content: "—";
+      color: var(--mid);
+      margin-right: 8px;
+    }
+
+    /* ── Footer ── */
+    footer {
+      padding: 32px 0 40px;
+    }
+    footer .wrap {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    footer p {
+      font-size: 0.8rem;
+      color: var(--mid);
+    }
+    .footer-links {
+      display: flex;
+      gap: 20px;
+      list-style: none;
+    }
+    .footer-links a {
+      font-size: 0.8rem;
+      color: var(--mid);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+    .footer-links a:hover { color: var(--ink); }
+
+    /* ── Thread (Socra → Thinkprint) ── */
+    .thread-label {
+      font-size: 0.78rem;
+      font-weight: 500;
+      color: var(--mid);
+      letter-spacing: 0.04em;
+      margin-top: 48px;
+      margin-bottom: 20px;
+    }
+    .thread {
+      display: grid;
+      grid-template-columns: 1fr 32px 1fr;
+      gap: 0;
+      align-items: center;
+    }
+    .thread-arrow {
+      text-align: center;
+      color: var(--rule);
+      font-size: 1.2rem;
+      padding-top: 2px;
+    }
+    .thread-product {
+      display: block;
+      padding: 20px 24px;
+      border: 1px solid var(--rule);
+      border-radius: 4px;
+      text-decoration: none;
+      color: inherit;
+      transition: border-color 0.15s;
+    }
+    .thread-product:hover { border-color: var(--mid); }
+    .thread-product--active { border-color: var(--accent); }
+    .thread-product-top {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+    .thread-product-name {
+      font-size: 0.92rem;
+      font-weight: 500;
+      color: var(--ink);
+    }
+    .thread-product p {
+      font-size: 0.82rem;
+      color: var(--mid);
+      line-height: 1.6;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 580px) {
+      .wrap { padding: 0 20px; }
+      .project, .post {
+        grid-template-columns: 1fr;
+        gap: 8px;
+      }
+      .about-grid {
+        grid-template-columns: 1fr;
+        gap: 28px;
+      }
+      nav .wrap { flex-direction: column; gap: 16px; }
+      .thread { grid-template-columns: 1fr; }
+      .thread-arrow { transform: none; padding: 4px 0; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * { transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Nav -->
+  <nav>
+    <div class="wrap">
+      <a href="#" class="nav-name">Suraj</a>
+      <ul class="nav-links">
+        <li><a href="#about">About</a></li>
+        <li><a href="#projects">Products</a></li>
+        <li><a href="#writing">Writing</a></li>
+        <li><a href="https://github.com/surajparapilly" target="_blank" rel="noopener">GitHub</a></li>
+        <li><a href="https://www.linkedin.com/in/suraj-parapilly" target="_blank" rel="noopener">LinkedIn</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- About -->
+  <section id="about">
+    <div class="wrap">
+      <p class="section-label">About</p>
+      <div class="about-grid">
+        <div class="about-block">
+          <h4>Background</h4>
+          <p>Industrial and Systems Engineering (Highest Distinction) from NUS, with a minor in statistics.</p>
+        </div>
+        <div class="about-block">
+          <h4>Currently</h4>
+          <ul>
+            <li>Management Associate, DBS Bank</li>
+          </ul>
+        </div>
+        <div class="about-block">
+          <h4>Interests</h4>
+          <ul>
+            <li>How language models actually work</li>
+            <li>Education and diagnostic tools</li>
+            <li>Product thinking and systems design</li>
+          </ul>
+        </div>
+        <div class="about-block">
+          <h4>Get in touch</h4>
+          <p>Open to conversations about EdTech, AI infrastructure, or anything you're building. The best way to reach me is via linkedin or email.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Products -->
+  <section id="projects">
+    <div class="wrap">
+      <p class="section-label">Products</p>
+      <div class="projects">
+
+        <a href="decodedaily.html" class="project">
+          <div class="project-meta">
+            <div class="project-name">DecodeDaily</div>
+          </div>
+          <div class="project-body">
+            <h3>News you can actually follow, at the level you're at</h3>
+            <p>A radio-style news app that reads the news to you and when a story assumes knowledge you don't have, you can ask. It explains, fills in the context, and keeps going. News stops being something you need to already understand to understand.</p>
+            <div class="tag-row">
+              <span class="tag">Consumer</span>
+              <span class="tag">Audio</span>
+              <span class="tag">AI</span>
+            </div>
+          </div>
+        </a>
+
+        <a href="socra.html" class="project">
+          <div class="project-meta">
+            <div class="project-name">Socra</div>
+          </div>
+          <div class="project-body">
+            <h3>A Socratic tutor for GP students that refuses to give answers</h3>
+            <p>Built and tested with real students. The insight was right, some GP students do need reasoning practice, not more content. But it requires a lot of intrinsic motivation to force them to go the hard way.</p>
+            <div class="tag-row">
+              <span class="tag">EdTech</span>
+              <span class="tag">AI</span>
+              <span class="tag">GP</span>
+            </div>
+          </div>
+        </a>
+
+        <a href="https://www.linkedin.com/in/suraj-parapilly" target="_blank" rel="noopener" class="project">
+          <div class="project-meta">
+            <div class="project-name">Thinkprint</div>
+            <div class="project-status">Active</div>
+          </div>
+          <div class="project-body">
+            <h3>AI diagnostics for tutors who need to see inside a student's thinking</h3>
+            <p>Tutors can't see whether students are genuinely reasoning or just producing good output with AI's help. Thinkprint tracks skill development longitudinally across essays, tests, and sessions, making the invisible visible.</p>
+            <p class="project-more">Reach out on LinkedIn to find out more →</p>
+            <div class="tag-row">
+              <span class="tag">EdTech</span>
+              <span class="tag">AI</span>
+              <span class="tag">GP / Economics</span>
+            </div>
+          </div>
+        </a>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Writing -->
+  <section id="writing">
+    <div class="wrap">
+      <p class="section-label">Writing</p>
+      <div class="blog-posts">
+
+        <a href="llm-understanding.html" class="post">
+          <div class="post-date">Sep 2026</div>
+          <div class="post-body">
+            <h3>How LLMs understand what you are saying</h3>
+            <p>From raw text to attention scores. A first-principles walkthrough of tokenization, embeddings, and self-attention using one sentence: "The cat is on the mat and it seems very hungry."</p>
+          </div>
+        </a>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="wrap">
+      <p>Suraj, Singapore — 2026</p>
+      <ul class="footer-links">
+        <li><a href="https://github.com/surajparapilly" target="_blank" rel="noopener">GitHub</a></li>
+        <li><a href="https://www.linkedin.com/in/suraj-parapilly" target="_blank" rel="noopener">LinkedIn</a></li>
+      </ul>
+    </div>
+  </footer>
+
+</body>
+</html>
